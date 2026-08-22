@@ -10,6 +10,8 @@ import carotte from "@/assets/p/carotte.jpg";
 import chou from "@/assets/p/chou.jpg";
 import poivron from "@/assets/p/poivron.jpg";
 import aubergine from "@/assets/p/aubergine.jpg";
+import pimentVert from "@/assets/p/piment-vert.jpg";
+import persil from "@/assets/p/persil.jpg";
 
 export type Category = "poisson" | "legume";
 
@@ -144,6 +146,26 @@ export const products: Product[] = [
     stock: 35,
     image: aubergine,
     description: "Aubergines violettes charnues, cultivées localement.",
+  },
+  {
+    id: "piment-vert",
+    name: "Piment vert",
+    category: "legume",
+    price: 600,
+    unit: "kg",
+    stock: 25,
+    image: pimentVert,
+    description: "Piments verts frais et piquants, pour relever toutes vos sauces.",
+  },
+  {
+    id: "persil",
+    name: "Persil",
+    category: "legume",
+    price: 500,
+    unit: "botte",
+    stock: 40,
+    image: persil,
+    description: "Persil frais et parfumé, cultivé dans les Niayes.",
   },
 ];
 
