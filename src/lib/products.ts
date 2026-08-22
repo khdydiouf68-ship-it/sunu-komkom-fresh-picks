@@ -12,6 +12,8 @@ import poivron from "@/assets/p/poivron.jpg";
 import aubergine from "@/assets/p/aubergine.jpg";
 import pimentVert from "@/assets/p/piment-vert.jpg";
 import persil from "@/assets/p/persil.jpg";
+import patate from "@/assets/p/patate.jpg";
+import manioc from "@/assets/p/manioc.jpg";
 
 export type Category = "poisson" | "legume";
 
@@ -166,6 +168,26 @@ export const products: Product[] = [
     stock: 40,
     image: persil,
     description: "Persil frais et parfumé, cultivé dans les Niayes.",
+  },
+  {
+    id: "patate",
+    name: "Patates douces",
+    category: "legume",
+    price: 800,
+    unit: "kg",
+    stock: 45,
+    image: patate,
+    description: "Patates douces sucrées à chair orange, parfaites bouillies ou frites.",
+  },
+  {
+    id: "manioc",
+    name: "Manioc",
+    category: "legume",
+    price: 500,
+    unit: "kg",
+    stock: 38,
+    image: manioc,
+    description: "Manioc frais à chair blanche, idéal bouilli ou frit en accompagnement.",
   },
 ];
 
