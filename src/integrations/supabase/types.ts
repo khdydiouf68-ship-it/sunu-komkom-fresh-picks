@@ -14,7 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          address: string
+          created_at: string
+          customer_name: string
+          customer_phone: string
+          delivery_fee: number
+          id: string
+          items: Json
+          note: string | null
+          paid_at: string | null
+          payment_method: string
+          quartier: string | null
+          reference: string
+          status: string
+          subtotal: number
+          total: number
+          updated_at: string
+          wave_launch_url: string | null
+          wave_session_id: string | null
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          customer_name: string
+          customer_phone: string
+          delivery_fee?: number
+          id?: string
+          items?: Json
+          note?: string | null
+          paid_at?: string | null
+          payment_method?: string
+          quartier?: string | null
+          reference: string
+          status?: string
+          subtotal: number
+          total: number
+          updated_at?: string
+          wave_launch_url?: string | null
+          wave_session_id?: string | null
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          customer_name?: string
+          customer_phone?: string
+          delivery_fee?: number
+          id?: string
+          items?: Json
+          note?: string | null
+          paid_at?: string | null
+          payment_method?: string
+          quartier?: string | null
+          reference?: string
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          wave_launch_url?: string | null
+          wave_session_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
