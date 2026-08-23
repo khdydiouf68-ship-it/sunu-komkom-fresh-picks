@@ -14,8 +14,10 @@ import pimentVert from "@/assets/p/piment-vert.jpg";
 import persil from "@/assets/p/persil.jpg";
 import patate from "@/assets/p/patate.jpg";
 import manioc from "@/assets/p/manioc.jpg";
+import jumbo from "@/assets/p/jumbo.jpg";
+import arom from "@/assets/p/arome.jpg";
 
-export type Category = "poisson" | "legume";
+export type Category = "poisson" | "legume" | "epice";
 
 export type Product = {
   id: string;
@@ -188,6 +190,26 @@ export const products: Product[] = [
     stock: 38,
     image: manioc,
     description: "Manioc frais à chair blanche, idéal bouilli ou frit en accompagnement.",
+  },
+  {
+    id: "jumbo",
+    name: "Jumbo",
+    category: "epice",
+    price: 500,
+    unit: "boîte",
+    stock: 50,
+    image: jumbo,
+    description: "Cubes d'assaisonnement classiques, indispensable pour rehausser vos sauces et ragoûts.",
+  },
+  {
+    id: "arome",
+    name: "Arôme",
+    category: "epice",
+    price: 1000,
+    unit: "bouteille",
+    stock: 40,
+    image: arom,
+    description: "Sauce assaisonnante liquide, parfaite pour marinades et plats mijotés.",
   },
 ];
 
