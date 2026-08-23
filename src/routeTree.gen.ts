@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as EpicesRouteImport } from './routes/epices'
 import { Route as LegumesRouteImport } from './routes/legumes'
 import { Route as PaiementRouteImport } from './routes/paiement'
 import { Route as PanierRouteImport } from './routes/panier'
@@ -30,6 +31,11 @@ const AProposRoute = AProposRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EpicesRoute = EpicesRouteImport.update({
+  id: '/epices',
+  path: '/epices',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegumesRoute = LegumesRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/contact': typeof ContactRoute
+  '/epices': typeof EpicesRoute
   '/legumes': typeof LegumesRoute
   '/paiement': typeof PaiementRoute
   '/panier': typeof PanierRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/contact': typeof ContactRoute
+  '/epices': typeof EpicesRoute
   '/legumes': typeof LegumesRoute
   '/paiement': typeof PaiementRoute
   '/panier': typeof PanierRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/contact': typeof ContactRoute
+  '/epices': typeof EpicesRoute
   '/legumes': typeof LegumesRoute
   '/paiement': typeof PaiementRoute
   '/panier': typeof PanierRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/a-propos'
     | '/contact'
+    | '/epices'
     | '/legumes'
     | '/paiement'
     | '/panier'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/a-propos'
     | '/contact'
+    | '/epices'
     | '/legumes'
     | '/paiement'
     | '/panier'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/a-propos'
     | '/contact'
+    | '/epices'
     | '/legumes'
     | '/paiement'
     | '/panier'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AProposRoute: typeof AProposRoute
   ContactRoute: typeof ContactRoute
+  EpicesRoute: typeof EpicesRoute
   LegumesRoute: typeof LegumesRoute
   PaiementRoute: typeof PaiementRoute
   PanierRoute: typeof PanierRoute
@@ -142,6 +155,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/epices': {
+      id: '/epices'
+      path: '/epices'
+      fullPath: '/epices'
+      preLoaderRoute: typeof EpicesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legumes': {
@@ -179,6 +199,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AProposRoute: AProposRoute,
   ContactRoute: ContactRoute,
+  EpicesRoute: EpicesRoute,
   LegumesRoute: LegumesRoute,
   PaiementRoute: PaiementRoute,
   PanierRoute: PanierRoute,
