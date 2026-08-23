@@ -17,6 +17,7 @@ import { Route as LegumesRouteImport } from './routes/legumes'
 import { Route as PaiementRouteImport } from './routes/paiement'
 import { Route as PanierRouteImport } from './routes/panier'
 import { Route as PoissonsRouteImport } from './routes/poissons'
+import { Route as CommandeReferenceRouteImport } from './routes/commande.$reference'
 import { Route as ApiPublicWaveWebhookRouteImport } from './routes/api/public/wave-webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,6 +60,11 @@ const PoissonsRoute = PoissonsRouteImport.update({
   path: '/poissons',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommandeReferenceRoute = CommandeReferenceRouteImport.update({
+  id: '/commande/$reference',
+  path: '/commande/$reference',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWaveWebhookRoute = ApiPublicWaveWebhookRouteImport.update({
   id: '/api/public/wave-webhook',
   path: '/api/public/wave-webhook',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/paiement': typeof PaiementRoute
   '/panier': typeof PanierRoute
   '/poissons': typeof PoissonsRoute
+  '/commande/$reference': typeof CommandeReferenceRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/paiement': typeof PaiementRoute
   '/panier': typeof PanierRoute
   '/poissons': typeof PoissonsRoute
+  '/commande/$reference': typeof CommandeReferenceRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/paiement': typeof PaiementRoute
   '/panier': typeof PanierRoute
   '/poissons': typeof PoissonsRoute
+  '/commande/$reference': typeof CommandeReferenceRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/paiement'
     | '/panier'
     | '/poissons'
+    | '/commande/$reference'
     | '/api/public/wave-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/paiement'
     | '/panier'
     | '/poissons'
+    | '/commande/$reference'
     | '/api/public/wave-webhook'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/paiement'
     | '/panier'
     | '/poissons'
+    | '/commande/$reference'
     | '/api/public/wave-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   PaiementRoute: typeof PaiementRoute
   PanierRoute: typeof PanierRoute
   PoissonsRoute: typeof PoissonsRoute
+  CommandeReferenceRoute: typeof CommandeReferenceRoute
   ApiPublicWaveWebhookRoute: typeof ApiPublicWaveWebhookRoute
 }
 
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PoissonsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/commande/$reference': {
+      id: '/commande/$reference'
+      path: '/commande/$reference'
+      fullPath: '/commande/$reference'
+      preLoaderRoute: typeof CommandeReferenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/wave-webhook': {
       id: '/api/public/wave-webhook'
       path: '/api/public/wave-webhook'
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaiementRoute: PaiementRoute,
   PanierRoute: PanierRoute,
   PoissonsRoute: PoissonsRoute,
+  CommandeReferenceRoute: CommandeReferenceRoute,
   ApiPublicWaveWebhookRoute: ApiPublicWaveWebhookRoute,
 }
 export const routeTree = rootRouteImport

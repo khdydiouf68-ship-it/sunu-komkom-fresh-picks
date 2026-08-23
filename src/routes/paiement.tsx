@@ -1,8 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
 import { useCart } from "@/lib/cart";
 import { formatFCFA } from "@/lib/products";
+import { createCheckout } from "@/lib/checkout.functions";
+import { LIVRAISON_FCFA } from "@/lib/checkout-shared";
 
 export const Route = createFileRoute("/paiement")({
   head: () => ({
@@ -10,45 +15,28 @@ export const Route = createFileRoute("/paiement")({
       { title: "Paiement — Sunu KomKom" },
       {
         name: "description",
-        content: "Payez votre commande de produits frais par Wave, Orange Money ou à la livraison.",
+        content: "Payez votre commande de produits frais par Wave ou à la livraison, partout à Dakar.",
       },
       { property: "og:title", content: "Paiement — Sunu KomKom" },
-      { property: "og:description", content: "Wave, Orange Money ou paiement à la livraison à Dakar." },
+      { property: "og:description", content: "Paiement Wave sécurisé ou règlement à la livraison à Dakar." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PaiementPage,
 });
 
-const LIVRAISON = 1500;
-
 const moyens = [
-  { id: "wave", label: "Wave", detail: "Paiement mobile instantané" },
-  { id: "om", label: "Orange Money", detail: "Débit sur votre compte OM" },
-  { id: "cash", label: "À la livraison", detail: "Espèces à la réception" },
+  { id: "wave" as const, label: "Wave", detail: "Paiement mobile sécurisé, confirmation automatique" },
+  { id: "cash" as const, label: "À la livraison", detail: "Espèces à la réception" },
 ];
 
 function PaiementPage() {
-  const { items, total, clear } = useCart();
-  const [moyen, setMoyen] = useState("wave");
-  const [confirme, setConfirme] = useState(false);
-
-  if (confirme) {
-    return (
-      <section className="mx-auto max-w-lg px-5 py-24 text-center">
-        <CheckCircle2 className="mx-auto size-14 text-leaf" />
-        <h1 className="mt-6 text-3xl">Commande confirmée</h1>
-        <p className="mt-3 text-muted-foreground">
-          Merci ! Vous recevrez un SMS de confirmation. Livraison prévue dans les 3 heures à Dakar.
-        </p>
-        <Link
-          to="/"
-          className="mt-8 inline-block rounded-xl bg-primary px-6 py-3 text-sm font-medium text-primary-foreground"
-        >
-          Retour à l'accueil
-        </Link>
-      </section>
-    );
-  }
+  const { items, total, lines, clear } = useCart();
+  const navigate = useNavigate();
+  const checkout = useServerFn(createCheckout);
+  const [moyen, setMoyen] = useState<"wave" | "cash">("wave");
+  const [envoi, setEnvoi] = useState(false);
 
   if (items.length === 0) {
     return (
@@ -65,23 +53,45 @@ function PaiementPage() {
     );
   }
 
+  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (envoi) return;
+    const form = new FormData(event.currentTarget);
+    setEnvoi(true);
+    try {
+      const result = await checkout({
+        data: {
+          lines,
+          customerName: String(form.get("nom") ?? ""),
+          customerPhone: String(form.get("tel") ?? ""),
+          address: String(form.get("adresse") ?? ""),
+          quartier: String(form.get("quartier") ?? "") || undefined,
+          paymentMethod: moyen,
+          origin: window.location.origin,
+        },
+      });
+      clear();
+      if (result.launchUrl) {
+        window.location.href = result.launchUrl;
+        return;
+      }
+      navigate({ to: "/commande/$reference", params: { reference: result.reference } });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Le paiement a échoué, réessayez.");
+      setEnvoi(false);
+    }
+  }
+
   return (
     <section className="mx-auto max-w-5xl px-5 py-14">
       <h1 className="text-4xl">Paiement</h1>
       <p className="mt-2 text-muted-foreground">Choisissez votre moyen de paiement et confirmez la livraison.</p>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          clear();
-          setConfirme(true);
-        }}
-        className="mt-10 grid gap-8 lg:grid-cols-[1fr_320px]"
-      >
+      <form onSubmit={onSubmit} className="mt-10 grid gap-8 lg:grid-cols-[1fr_320px]">
         <div className="space-y-6">
           <fieldset className="rounded-2xl border border-border bg-card p-6 shadow-card">
             <legend className="px-2 text-sm font-semibold">Moyen de paiement</legend>
-            <div className="mt-2 grid gap-3 sm:grid-cols-3">
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
               {moyens.map((m) => (
                 <label
                   key={m.id}
@@ -109,13 +119,7 @@ function PaiementPage() {
             <Input label="Nom complet" id="nom" placeholder="Awa Diop" />
             <Input label="Téléphone" id="tel" placeholder="77 000 00 00" />
             <Input label="Adresse de livraison" id="adresse" placeholder="Sacré-Cœur 3, Villa 12, Dakar" />
-            {moyen !== "cash" && (
-              <Input
-                label={`Numéro ${moyen === "wave" ? "Wave" : "Orange Money"}`}
-                id="paynum"
-                placeholder="77 000 00 00"
-              />
-            )}
+            <Input label="Quartier (optionnel)" id="quartier" placeholder="Sacré-Cœur" required={false} />
           </fieldset>
         </div>
 
@@ -133,20 +137,24 @@ function PaiementPage() {
           </ul>
           <div className="mt-4 flex justify-between border-t border-border pt-3 text-sm">
             <span className="text-muted-foreground">Livraison</span>
-            <span>{formatFCFA(LIVRAISON)}</span>
+            <span>{formatFCFA(LIVRAISON_FCFA)}</span>
           </div>
           <div className="mt-2 flex justify-between text-base font-semibold">
             <span>Total</span>
-            <span className="text-leaf">{formatFCFA(total + LIVRAISON)}</span>
+            <span className="text-leaf">{formatFCFA(total + LIVRAISON_FCFA)}</span>
           </div>
           <button
             type="submit"
-            className="mt-6 w-full rounded-xl bg-accent px-4 py-3 text-sm font-medium text-accent-foreground"
+            disabled={envoi}
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-medium text-accent-foreground disabled:opacity-60"
           >
-            Confirmer et payer
+            {envoi && <Loader2 className="size-4 animate-spin" />}
+            {moyen === "wave" ? "Payer avec Wave" : "Confirmer la commande"}
           </button>
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            Démonstration : aucun débit réel n'est effectué.
+            {moyen === "wave"
+              ? "Vous serez redirigé vers Wave pour valider le paiement."
+              : "Vous réglez en espèces à la réception."}
           </p>
         </aside>
       </form>
@@ -154,7 +162,17 @@ function PaiementPage() {
   );
 }
 
-function Input({ label, id, placeholder }: { label: string; id: string; placeholder: string }) {
+function Input({
+  label,
+  id,
+  placeholder,
+  required = true,
+}: {
+  label: string;
+  id: string;
+  placeholder: string;
+  required?: boolean;
+}) {
   return (
     <div>
       <label htmlFor={id} className="text-sm font-medium">
@@ -162,7 +180,8 @@ function Input({ label, id, placeholder }: { label: string; id: string; placehol
       </label>
       <input
         id={id}
-        required
+        name={id}
+        required={required}
         placeholder={placeholder}
         className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
       />
