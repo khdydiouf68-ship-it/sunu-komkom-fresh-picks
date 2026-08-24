@@ -3,6 +3,11 @@ import tilapia from "@/assets/p/tilapia.jpg";
 import dorade from "@/assets/p/dorade.jpg";
 import sardine from "@/assets/p/sardine.jpg";
 import maquereau from "@/assets/p/maquereau.jpg";
+import merou from "@/assets/p/merou.jpg";
+import capitaine from "@/assets/p/capitaine.jpg";
+import pagel from "@/assets/p/pagel.jpg";
+import mulet from "@/assets/p/mulet.jpg";
+import sole from "@/assets/p/sole.jpg";
 import tomate from "@/assets/p/tomate.jpg";
 import oignon from "@/assets/p/oignon.jpg";
 import pommeDeTerre from "@/assets/p/pomme-de-terre.jpg";
@@ -81,6 +86,56 @@ export const products: Product[] = [
     stock: 28,
     image: maquereau,
     description: "Savoureux et généreux, parfait braisé au yassa.",
+  },
+  {
+    id: "merou",
+    name: "Mérou",
+    category: "poisson",
+    price: 8000,
+    unit: "kg",
+    stock: 12,
+    image: merou,
+    description: "Chair ferme et savoureuse, poisson de grande qualité pour les grandes occasions.",
+  },
+  {
+    id: "capitaine",
+    name: "Capitaine",
+    category: "poisson",
+    price: 6500,
+    unit: "kg",
+    stock: 15,
+    image: capitaine,
+    description: "Gros poisson à chair blanche et fondante, idéal pour le boulette ou le yassa.",
+  },
+  {
+    id: "pagel",
+    name: "Pagel",
+    category: "poisson",
+    price: 4000,
+    unit: "kg",
+    stock: 20,
+    image: pagel,
+    description: "Poisson à chair rosée et délicate, excellent grillé ou en sauce.",
+  },
+  {
+    id: "mulet",
+    name: "Mulet",
+    category: "poisson",
+    price: 2200,
+    unit: "kg",
+    stock: 26,
+    image: mulet,
+    description: "Poisson de mer à chair savoureuse, parfait fumé ou braisé.",
+  },
+  {
+    id: "sole",
+    name: "Sole",
+    category: "poisson",
+    price: 5500,
+    unit: "kg",
+    stock: 14,
+    image: sole,
+    description: "Poisson plat à chair fine et subtile, délicieux poêlé au beurre.",
   },
   {
     id: "tomate",
