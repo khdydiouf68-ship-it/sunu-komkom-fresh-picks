@@ -16,6 +16,7 @@ import patate from "@/assets/p/patate.jpg";
 import manioc from "@/assets/p/manioc.jpg";
 import jumbo from "@/assets/p/jumbo.jpg";
 import arom from "@/assets/p/arome.jpg";
+import vinaigre from "@/assets/p/vinaigre.jpg";
 
 export type Category = "poisson" | "legume" | "epice";
 
@@ -210,6 +211,16 @@ export const products: Product[] = [
     stock: 40,
     image: arom,
     description: "Sauce assaisonnante liquide, parfaite pour marinades et plats mijotés.",
+  },
+  {
+    id: "vinaigre",
+    name: "Vinaigre",
+    category: "epice",
+    price: 800,
+    unit: "bouteille",
+    stock: 35,
+    image: vinaigre,
+    description: "Vinaigre d'arôme assaisonnant, indispensable pour vinaigrettes, sauces et marinades.",
   },
 ];
 
