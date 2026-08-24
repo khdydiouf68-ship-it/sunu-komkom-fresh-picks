@@ -75,7 +75,7 @@ function PaiementPage() {
         window.location.href = result.launchUrl;
         return;
       }
-      navigate({ to: "/commande/$reference", params: { reference: result.reference } });
+      navigate({ to: "/commande/$reference", params: { reference: result.reference }, search: { echec: false } });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Le paiement a échoué, réessayez.");
       setEnvoi(false);
