@@ -355,6 +355,16 @@ export const products: Product[] = [
     image: huilePalme,
     description: "Huile de palme rouge, essentielle pour le soupou kandja et de nombreuses sauces traditionnelles.",
   },
+  {
+    id: "laurier",
+    name: "Laurier",
+    category: "epice",
+    price: 500,
+    unit: "sachet",
+    stock: 40,
+    image: laurier,
+    description: "Feuilles de laurier séchées, parfumées, indispensables pour bouillons, ragoûts et marinades.",
+  },
 ];
 
 export const formatFCFA = (value: number) =>
