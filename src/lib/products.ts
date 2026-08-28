@@ -26,6 +26,7 @@ import courgette from "@/assets/p/courgette.jpg";
 import navets from "@/assets/p/navets.jpg";
 import mais from "@/assets/p/mais.jpg";
 import huilePalme from "@/assets/p/huile-palme.jpg";
+import laurier from "@/assets/p/laurier.jpg";
 import jumbo from "@/assets/p/jumbo.jpg";
 import arom from "@/assets/p/arome.jpg";
 import vinaigre from "@/assets/p/vinaigre.jpg";
@@ -353,6 +354,16 @@ export const products: Product[] = [
     stock: 30,
     image: huilePalme,
     description: "Huile de palme rouge, essentielle pour le soupou kandja et de nombreuses sauces traditionnelles.",
+  },
+  {
+    id: "laurier",
+    name: "Laurier",
+    category: "epice",
+    price: 500,
+    unit: "sachet",
+    stock: 40,
+    image: laurier,
+    description: "Feuilles de laurier séchées, parfumées, indispensables pour bouillons, ragoûts et marinades.",
   },
 ];
 
