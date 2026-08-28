@@ -26,6 +26,7 @@ import courgette from "@/assets/p/courgette.jpg";
 import navets from "@/assets/p/navets.jpg";
 import mais from "@/assets/p/mais.jpg";
 import huilePalme from "@/assets/p/huile-palme.jpg";
+import laurier from "@/assets/p/laurier.jpg";
 import jumbo from "@/assets/p/jumbo.jpg";
 import arom from "@/assets/p/arome.jpg";
 import vinaigre from "@/assets/p/vinaigre.jpg";
