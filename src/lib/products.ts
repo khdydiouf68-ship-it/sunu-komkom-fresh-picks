@@ -26,6 +26,8 @@ import courgette from "@/assets/p/courgette.jpg";
 import navets from "@/assets/p/navets.jpg";
 import mais from "@/assets/p/mais.jpg";
 import bissap from "@/assets/p/bissap.jpg";
+import bissapBlanc from "@/assets/p/bissap-blanc.jpg";
+import huilePalme from "@/assets/p/huile-palme.jpg";
 import jumbo from "@/assets/p/jumbo.jpg";
 import arom from "@/assets/p/arome.jpg";
 import vinaigre from "@/assets/p/vinaigre.jpg";
