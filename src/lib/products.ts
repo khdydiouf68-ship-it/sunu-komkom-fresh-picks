@@ -327,6 +327,16 @@ export const products: Product[] = [
     description: "Fleurs d'hibiscus séchées, base du jus de bissap rafraîchissant, riche en antioxydants.",
   },
   {
+    id: "bissap-blanc",
+    name: "Bissap blanc",
+    category: "legume",
+    price: 1200,
+    unit: "kg",
+    stock: 20,
+    image: bissapBlanc,
+    description: "Variété claire d'hibiscus, plus douce, idéale pour un jus léger et moins acide.",
+  },
+  {
     id: "jumbo",
     name: "Jumbo",
     category: "epice",
