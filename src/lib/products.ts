@@ -366,6 +366,16 @@ export const products: Product[] = [
     image: vinaigre,
     description: "Vinaigre d'arôme assaisonnant, indispensable pour vinaigrettes, sauces et marinades.",
   },
+  {
+    id: "huile-palme",
+    name: "Huile de palme",
+    category: "epice",
+    price: 1500,
+    unit: "bouteille",
+    stock: 30,
+    image: huilePalme,
+    description: "Huile de palme rouge, essentielle pour le soupou kandja et de nombreuses sauces traditionnelles.",
+  },
 ];
 
 export const formatFCFA = (value: number) =>
