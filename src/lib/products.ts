@@ -26,6 +26,8 @@ import courgette from "@/assets/p/courgette.jpg";
 import navets from "@/assets/p/navets.jpg";
 import mais from "@/assets/p/mais.jpg";
 import bissap from "@/assets/p/bissap.jpg";
+import bissapBlanc from "@/assets/p/bissap-blanc.jpg";
+import huilePalme from "@/assets/p/huile-palme.jpg";
 import jumbo from "@/assets/p/jumbo.jpg";
 import arom from "@/assets/p/arome.jpg";
 import vinaigre from "@/assets/p/vinaigre.jpg";
@@ -325,6 +327,16 @@ export const products: Product[] = [
     description: "Fleurs d'hibiscus séchées, base du jus de bissap rafraîchissant, riche en antioxydants.",
   },
   {
+    id: "bissap-blanc",
+    name: "Bissap blanc",
+    category: "legume",
+    price: 1200,
+    unit: "kg",
+    stock: 20,
+    image: bissapBlanc,
+    description: "Variété claire d'hibiscus, plus douce, idéale pour un jus léger et moins acide.",
+  },
+  {
     id: "jumbo",
     name: "Jumbo",
     category: "epice",
@@ -353,6 +365,16 @@ export const products: Product[] = [
     stock: 35,
     image: vinaigre,
     description: "Vinaigre d'arôme assaisonnant, indispensable pour vinaigrettes, sauces et marinades.",
+  },
+  {
+    id: "huile-palme",
+    name: "Huile de palme",
+    category: "epice",
+    price: 1500,
+    unit: "bouteille",
+    stock: 30,
+    image: huilePalme,
+    description: "Huile de palme rouge, essentielle pour le soupou kandja et de nombreuses sauces traditionnelles.",
   },
 ];
 
