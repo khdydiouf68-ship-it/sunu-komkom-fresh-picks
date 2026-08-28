@@ -25,8 +25,6 @@ import concombre from "@/assets/p/concombre.jpg";
 import courgette from "@/assets/p/courgette.jpg";
 import navets from "@/assets/p/navets.jpg";
 import mais from "@/assets/p/mais.jpg";
-import bissap from "@/assets/p/bissap.jpg";
-import bissapBlanc from "@/assets/p/bissap-blanc.jpg";
 import huilePalme from "@/assets/p/huile-palme.jpg";
 import jumbo from "@/assets/p/jumbo.jpg";
 import arom from "@/assets/p/arome.jpg";
@@ -315,26 +313,6 @@ export const products: Product[] = [
     stock: 50,
     image: mais,
     description: "Épis de maïs frais et sucrés, délicieux bouillis ou grillés au feu de bois.",
-  },
-  {
-    id: "bissap",
-    name: "Bissap",
-    category: "legume",
-    price: 900,
-    unit: "kg",
-    stock: 30,
-    image: bissap,
-    description: "Fleurs d'hibiscus séchées, base du jus de bissap rafraîchissant, riche en antioxydants.",
-  },
-  {
-    id: "bissap-blanc",
-    name: "Bissap blanc",
-    category: "legume",
-    price: 1200,
-    unit: "kg",
-    stock: 20,
-    image: bissapBlanc,
-    description: "Variété claire d'hibiscus, plus douce, idéale pour un jus léger et moins acide.",
   },
   {
     id: "jumbo",
