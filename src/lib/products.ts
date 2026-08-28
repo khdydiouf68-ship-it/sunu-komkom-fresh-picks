@@ -30,6 +30,8 @@ import laurier from "@/assets/p/laurier.jpg";
 import jumbo from "@/assets/p/jumbo.jpg";
 import arom from "@/assets/p/arome.jpg";
 import vinaigre from "@/assets/p/vinaigre.jpg";
+import poivre from "@/assets/p/poivre.jpg";
+import ail from "@/assets/p/ail.jpg";
 
 export type Category = "poisson" | "legume" | "epice";
 
@@ -364,6 +366,26 @@ export const products: Product[] = [
     stock: 40,
     image: laurier,
     description: "Feuilles de laurier séchées, parfumées, indispensables pour bouillons, ragoûts et marinades.",
+  },
+  {
+    id: "poivre",
+    name: "Poivre",
+    category: "epice",
+    price: 700,
+    unit: "sachet",
+    stock: 40,
+    image: poivre,
+    description: "Grains de poivre noir, moulus au besoin, pour relever tous vos plats et sauces.",
+  },
+  {
+    id: "ail",
+    name: "Ail",
+    category: "epice",
+    price: 600,
+    unit: "pièce",
+    stock: 50,
+    image: ail,
+    description: "Ail frais, gousses parfumées, base indispensable des sauces, marinades et yassa.",
   },
 ];
 
