@@ -19,6 +19,12 @@ import pimentVert from "@/assets/p/piment-vert.jpg";
 import persil from "@/assets/p/persil.jpg";
 import patate from "@/assets/p/patate.jpg";
 import manioc from "@/assets/p/manioc.jpg";
+import gombo from "@/assets/p/gombo.jpg";
+import salade from "@/assets/p/salade.jpg";
+import concombre from "@/assets/p/concombre.jpg";
+import courgette from "@/assets/p/courgette.jpg";
+import navets from "@/assets/p/navets.jpg";
+import mais from "@/assets/p/mais.jpg";
 import jumbo from "@/assets/p/jumbo.jpg";
 import arom from "@/assets/p/arome.jpg";
 import vinaigre from "@/assets/p/vinaigre.jpg";
@@ -246,6 +252,66 @@ export const products: Product[] = [
     stock: 38,
     image: manioc,
     description: "Manioc frais à chair blanche, idéal bouilli ou frit en accompagnement.",
+  },
+  {
+    id: "gombo",
+    name: "Gombo",
+    category: "legume",
+    price: 1000,
+    unit: "kg",
+    stock: 30,
+    image: gombo,
+    description: "Gombo frais et tendre, indispensable pour le soupou kandja et les sauces mucilagineuses.",
+  },
+  {
+    id: "salade",
+    name: "Salade",
+    category: "legume",
+    price: 500,
+    unit: "pièce",
+    stock: 35,
+    image: salade,
+    description: "Laitue fraîche et croquante, cultivée dans les Niayes, parfaite en entrée ou en garniture.",
+  },
+  {
+    id: "concombre",
+    name: "Concombre",
+    category: "legume",
+    price: 800,
+    unit: "kg",
+    stock: 40,
+    image: concombre,
+    description: "Concombre frais et croquant, idéal pour les salades fraîches et les jus.",
+  },
+  {
+    id: "courgette",
+    name: "Courgettes",
+    category: "legume",
+    price: 1200,
+    unit: "kg",
+    stock: 28,
+    image: courgette,
+    description: "Courgettes fermes et brillantes, excellentes poêlées, grillées ou en tian.",
+  },
+  {
+    id: "navets",
+    name: "Navets",
+    category: "legume",
+    price: 700,
+    unit: "kg",
+    stock: 25,
+    image: navets,
+    description: "Navets frais à chair blanche, parfaits en ragoût ou en soupe.",
+  },
+  {
+    id: "mais",
+    name: "Maïs frais",
+    category: "legume",
+    price: 600,
+    unit: "pièce",
+    stock: 50,
+    image: mais,
+    description: "Épis de maïs frais et sucrés, délicieux bouillis ou grillés au feu de bois.",
   },
   {
     id: "jumbo",
