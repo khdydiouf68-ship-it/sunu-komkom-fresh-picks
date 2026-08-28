@@ -315,6 +315,16 @@ export const products: Product[] = [
     description: "Épis de maïs frais et sucrés, délicieux bouillis ou grillés au feu de bois.",
   },
   {
+    id: "bissap",
+    name: "Bissap",
+    category: "legume",
+    price: 900,
+    unit: "kg",
+    stock: 30,
+    image: bissap,
+    description: "Fleurs d'hibiscus séchées, base du jus de bissap rafraîchissant, riche en antioxydants.",
+  },
+  {
     id: "jumbo",
     name: "Jumbo",
     category: "epice",
