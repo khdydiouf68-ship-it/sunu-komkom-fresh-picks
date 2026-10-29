@@ -10,13 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AProposRouteImport } from './routes/a-propos'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as EpicesRouteImport } from './routes/epices'
 import { Route as LegumesRouteImport } from './routes/legumes'
 import { Route as PaiementRouteImport } from './routes/paiement'
 import { Route as PanierRouteImport } from './routes/panier'
 import { Route as PoissonsRouteImport } from './routes/poissons'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as CommandeReferenceRouteImport } from './routes/commande.$reference'
 import { Route as ApiPublicWaveWebhookRouteImport } from './routes/api/public/wave-webhook'
 
@@ -25,9 +28,18 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AProposRoute = AProposRouteImport.update({
   id: '/a-propos',
   path: '/a-propos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -60,6 +72,11 @@ const PoissonsRoute = PoissonsRouteImport.update({
   path: '/poissons',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const CommandeReferenceRoute = CommandeReferenceRouteImport.update({
   id: '/commande/$reference',
   path: '/commande/$reference',
@@ -74,37 +91,44 @@ const ApiPublicWaveWebhookRoute = ApiPublicWaveWebhookRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/epices': typeof EpicesRoute
   '/legumes': typeof LegumesRoute
   '/paiement': typeof PaiementRoute
   '/panier': typeof PanierRoute
   '/poissons': typeof PoissonsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/commande/$reference': typeof CommandeReferenceRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/epices': typeof EpicesRoute
   '/legumes': typeof LegumesRoute
   '/paiement': typeof PaiementRoute
   '/panier': typeof PanierRoute
   '/poissons': typeof PoissonsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/commande/$reference': typeof CommandeReferenceRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/a-propos': typeof AProposRoute
+  '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/epices': typeof EpicesRoute
   '/legumes': typeof LegumesRoute
   '/paiement': typeof PaiementRoute
   '/panier': typeof PanierRoute
   '/poissons': typeof PoissonsRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/commande/$reference': typeof CommandeReferenceRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
@@ -113,43 +137,52 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/a-propos'
+    | '/auth'
     | '/contact'
     | '/epices'
     | '/legumes'
     | '/paiement'
     | '/panier'
     | '/poissons'
+    | '/admin'
     | '/commande/$reference'
     | '/api/public/wave-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/a-propos'
+    | '/auth'
     | '/contact'
     | '/epices'
     | '/legumes'
     | '/paiement'
     | '/panier'
     | '/poissons'
+    | '/admin'
     | '/commande/$reference'
     | '/api/public/wave-webhook'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/a-propos'
+    | '/auth'
     | '/contact'
     | '/epices'
     | '/legumes'
     | '/paiement'
     | '/panier'
     | '/poissons'
+    | '/_authenticated/admin'
     | '/commande/$reference'
     | '/api/public/wave-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AProposRoute: typeof AProposRoute
+  AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   EpicesRoute: typeof EpicesRoute
   LegumesRoute: typeof LegumesRoute
@@ -169,11 +202,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/a-propos': {
       id: '/a-propos'
       path: '/a-propos'
       fullPath: '/a-propos'
       preLoaderRoute: typeof AProposRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -218,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PoissonsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/commande/$reference': {
       id: '/commande/$reference'
       path: '/commande/$reference'
@@ -235,9 +289,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AProposRoute: AProposRoute,
+  AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   EpicesRoute: EpicesRoute,
   LegumesRoute: LegumesRoute,
