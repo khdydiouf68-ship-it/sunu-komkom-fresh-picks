@@ -67,7 +67,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       remove: (id) => setLines((prev) => prev.filter((l) => l.id !== id)),
       clear: () => setLines([]),
     };
-  }, [lines]);
+  }, [lines, products]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
