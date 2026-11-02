@@ -32,6 +32,7 @@ export type Database = {
           subtotal: number
           total: number
           updated_at: string
+          user_id: string | null
           wave_launch_url: string | null
           wave_session_id: string | null
         }
@@ -52,6 +53,7 @@ export type Database = {
           subtotal: number
           total: number
           updated_at?: string
+          user_id?: string | null
           wave_launch_url?: string | null
           wave_session_id?: string | null
         }
@@ -72,6 +74,7 @@ export type Database = {
           subtotal?: number
           total?: number
           updated_at?: string
+          user_id?: string | null
           wave_launch_url?: string | null
           wave_session_id?: string | null
         }

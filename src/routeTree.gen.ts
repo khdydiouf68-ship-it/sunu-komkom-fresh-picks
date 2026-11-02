@@ -20,6 +20,7 @@ import { Route as PaiementRouteImport } from './routes/paiement'
 import { Route as PanierRouteImport } from './routes/panier'
 import { Route as PoissonsRouteImport } from './routes/poissons'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as CommandeReferenceRouteImport } from './routes/commande.$reference'
 import { Route as ApiPublicWaveWebhookRouteImport } from './routes/api/public/wave-webhook'
 
@@ -77,6 +78,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
+  id: '/compte',
+  path: '/compte',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const CommandeReferenceRoute = CommandeReferenceRouteImport.update({
   id: '/commande/$reference',
   path: '/commande/$reference',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/panier': typeof PanierRoute
   '/poissons': typeof PoissonsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/compte': typeof AuthenticatedCompteRoute
   '/commande/$reference': typeof CommandeReferenceRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
@@ -113,6 +120,7 @@ export interface FileRoutesByTo {
   '/panier': typeof PanierRoute
   '/poissons': typeof PoissonsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/compte': typeof AuthenticatedCompteRoute
   '/commande/$reference': typeof CommandeReferenceRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   '/panier': typeof PanierRoute
   '/poissons': typeof PoissonsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/commande/$reference': typeof CommandeReferenceRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/panier'
     | '/poissons'
     | '/admin'
+    | '/compte'
     | '/commande/$reference'
     | '/api/public/wave-webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/panier'
     | '/poissons'
     | '/admin'
+    | '/compte'
     | '/commande/$reference'
     | '/api/public/wave-webhook'
   id:
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/panier'
     | '/poissons'
     | '/_authenticated/admin'
+    | '/_authenticated/compte'
     | '/commande/$reference'
     | '/api/public/wave-webhook'
   fileRoutesById: FileRoutesById
@@ -272,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/compte': {
+      id: '/_authenticated/compte'
+      path: '/compte'
+      fullPath: '/compte'
+      preLoaderRoute: typeof AuthenticatedCompteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/commande/$reference': {
       id: '/commande/$reference'
       path: '/commande/$reference'
@@ -291,10 +310,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedCompteRoute: AuthenticatedCompteRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
