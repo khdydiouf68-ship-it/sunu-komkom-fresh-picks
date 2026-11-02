@@ -1,5 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { products, type Product } from "./products";
+import { useQuery } from "@tanstack/react-query";
+import { products as staticProducts, type Product } from "./products";
+import { catalogOptions } from "./catalog";
+import { mergeCatalog } from "./catalog-shared";
 
 export type CartLine = { id: string; qty: number };
 
@@ -36,6 +39,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
   }, [lines, hydrated]);
 
+  const { data: rows } = useQuery(catalogOptions);
+  const products = useMemo(() => rows ? mergeCatalog(rows.map(({ displayImage, ...p }) => ({ ...p, image: displayImage }))) : staticProducts, [rows]);
   const value = useMemo<CartContextValue>(() => {
     const items = lines
       .map((line) => {

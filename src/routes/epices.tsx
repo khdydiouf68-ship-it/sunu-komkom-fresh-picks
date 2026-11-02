@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProductCard } from "@/components/ProductCard";
-import { getProducts } from "@/lib/products";
+import { catalogOptions, useCatalog } from "@/lib/catalog";
 
 export const Route = createFileRoute("/epices")({
   head: () => ({
@@ -17,10 +17,12 @@ export const Route = createFileRoute("/epices")({
       },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(catalogOptions),
   component: EpicesPage,
 });
 
 function EpicesPage() {
+  const catalog = useCatalog();
   return (
     <section className="mx-auto max-w-6xl px-5 py-14">
       <h1 className="text-4xl">Épices & assaisonnement</h1>
@@ -29,7 +31,7 @@ function EpicesPage() {
         parfumées pour rehausser tous vos plats.
       </p>
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {getProducts("epice").map((p) => (
+        {catalog.filter((p) => p.category === "epice").map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
       </div>
