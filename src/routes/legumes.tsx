@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProductCard } from "@/components/ProductCard";
-import { getProducts } from "@/lib/products";
+import { catalogOptions, useCatalog } from "@/lib/catalog";
 
 export const Route = createFileRoute("/legumes")({
   head: () => ({
@@ -14,10 +14,12 @@ export const Route = createFileRoute("/legumes")({
       { property: "og:description", content: "Légumes maraîchers locaux livrés frais à Dakar." },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(catalogOptions),
   component: LegumesPage,
 });
 
 function LegumesPage() {
+  const catalog = useCatalog();
   return (
     <section className="mx-auto max-w-6xl px-5 py-14">
       <h1 className="text-4xl">Légumes frais</h1>
@@ -25,7 +27,7 @@ function LegumesPage() {
         Récoltés dans les fermes des Niayes et livrés le jour même, sans stockage prolongé.
       </p>
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {getProducts("legume").map((p) => (
+        {catalog.filter((p) => p.category === "legume").map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
       </div>

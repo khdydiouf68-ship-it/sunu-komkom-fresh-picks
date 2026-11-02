@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { readCatalog } from "./catalog.functions";
+import { mergeCatalog } from "./catalog-shared";
 import { LIVRAISON_FCFA, buildOrderLines, makeReference } from "./checkout-shared";
 
 const checkoutInput = z.object({
@@ -20,7 +22,7 @@ const checkoutInput = z.object({
 export const createCheckout = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => checkoutInput.parse(input))
   .handler(async ({ data }) => {
-    const { items, subtotal } = buildOrderLines(data.lines);
+    const { items, subtotal } = buildOrderLines(data.lines, mergeCatalog((await readCatalog()) as never));
     if (items.length === 0) throw new Error("Panier vide ou produits inconnus.");
 
     const deliveryFee = LIVRAISON_FCFA;

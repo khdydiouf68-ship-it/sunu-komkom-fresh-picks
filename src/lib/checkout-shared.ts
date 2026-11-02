@@ -1,11 +1,11 @@
-import { products } from "./products";
+import { products as staticProducts } from "./products";
 
 export const LIVRAISON_FCFA = 1500;
 
 export type OrderLine = { id: string; name: string; qty: number; unitPrice: number; total: number };
 
 /** Recalcule les prix côté serveur à partir du catalogue — jamais depuis le client. */
-export function buildOrderLines(lines: Array<{ id: string; qty: number }>) {
+export function buildOrderLines(lines: Array<{ id: string; qty: number }>, products: Array<{ id: string; name: string; price: number }> = staticProducts) {
   const items: OrderLine[] = [];
   for (const line of lines) {
     const product = products.find((p) => p.id === line.id);

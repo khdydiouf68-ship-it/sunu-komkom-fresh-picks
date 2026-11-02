@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ProductCard } from "@/components/ProductCard";
-import { getProducts } from "@/lib/products";
+import { catalogOptions, useCatalog } from "@/lib/catalog";
 
 export const Route = createFileRoute("/poissons")({
   head: () => ({
@@ -14,10 +14,12 @@ export const Route = createFileRoute("/poissons")({
       { property: "og:description", content: "Pêche du jour livrée à Dakar : thiof, dorade, tilapia et plus." },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(catalogOptions),
   component: PoissonsPage,
 });
 
 function PoissonsPage() {
+  const catalog = useCatalog();
   return (
     <section className="mx-auto max-w-6xl px-5 py-14">
       <h1 className="text-4xl">Poissons frais</h1>
@@ -25,7 +27,7 @@ function PoissonsPage() {
         Sélectionnés chaque matin au débarcadère, conservés sous glace jusqu'à votre porte.
       </p>
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {getProducts("poisson").map((p) => (
+        {catalog.filter((p) => p.category === "poisson").map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}
       </div>
