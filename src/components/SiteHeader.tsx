@@ -37,6 +37,10 @@ export function SiteHeader() {
           ))}
         </nav>
 
+        <Link to="/compte" aria-label="Mon compte" title="Mon compte" className="ml-auto mr-2 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground md:ml-0">
+          <UserRound className="size-5" />
+          <span className="hidden sm:inline">Mon compte</span>
+        </Link>
         <Link
           to="/panier"
           className="relative inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
