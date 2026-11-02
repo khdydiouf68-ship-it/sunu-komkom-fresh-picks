@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingBasket } from "lucide-react";
+import { ShoppingBasket, UserRound } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useCart } from "@/lib/cart";
 
