@@ -30,11 +30,19 @@ export const createCheckout = createServerFn({ method: "POST" })
     const reference = makeReference();
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { getRequestHeader } = await import("@tanstack/react-start/server");
+    const bearer = getRequestHeader("authorization")?.replace(/^Bearer\s+/i, "");
+    let userId: string | null = null;
+    if (bearer) {
+      const { data: who } = await supabaseAdmin.auth.getUser(bearer);
+      userId = who.user?.id ?? null;
+    }
 
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .insert({
         reference,
+        user_id: userId,
         customer_name: data.customerName,
         customer_phone: data.customerPhone,
         address: data.address,
