@@ -40,7 +40,7 @@ function ComptePage() {
     <h2 className="mt-8 text-2xl">Mes commandes</h2>
     {data.orders.length === 0 ? <div className="mt-6 text-muted-foreground"><Package className="mb-3 size-8 text-leaf" /><p>Vous n’avez pas encore de commande.</p><Button asChild className="mt-4"><Link to="/poissons">Faire mes courses</Link></Button></div> :
     <ul className="mt-4 divide-y divide-border">{data.orders.map(o => <li key={o.reference}>
-      <Link to="/commande/$reference" params={{ reference: o.reference }} className="flex items-center justify-between gap-4 py-4 hover:bg-secondary/40">
+      <Link to="/commande/$reference" params={{ reference: o.reference }} search={{ echec: false }} className="flex items-center justify-between gap-4 py-4 hover:bg-secondary/40">
         <div><p className="font-semibold">{o.reference}</p><p className="text-sm text-muted-foreground">{new Date(o.created_at).toLocaleDateString("fr-FR")} · {o.payment_method === "wave" ? "Wave" : "À la livraison"}</p></div>
         <div className="text-right"><p className="font-semibold">{formatFCFA(o.total)}</p><p className="text-sm text-muted-foreground">{statusLabel[o.status] ?? o.status}</p></div>
       </Link></li>)}</ul>}
