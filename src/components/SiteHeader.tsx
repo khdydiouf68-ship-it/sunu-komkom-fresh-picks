@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingBasket, UserRound } from "lucide-react";
+import { ShieldCheck, ShoppingBasket, UserRound } from "lucide-react";
 import logo from "@/assets/logo.png";
 import { useCart } from "@/lib/cart";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 const links = [
   { to: "/", label: "Accueil" },
@@ -14,6 +15,7 @@ const links = [
 
 export function SiteHeader() {
   const { count } = useCart();
+  const isAdmin = useIsAdmin();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
@@ -37,7 +39,18 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <Link to="/compte" aria-label="Mon compte" title="Mon compte" className="ml-auto mr-2 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground md:ml-0">
+        {isAdmin && (
+          <Link
+            to="/admin"
+            aria-label="Administration"
+            title="Administration"
+            className="ml-auto inline-flex items-center gap-1 rounded-full border border-leaf/40 px-3 py-1.5 text-sm font-medium text-leaf transition-colors hover:bg-leaf/10 md:ml-0"
+          >
+            <ShieldCheck className="size-4" />
+            <span className="hidden sm:inline">Admin</span>
+          </Link>
+        )}
+        <Link to="/compte" aria-label="Mon compte" title="Mon compte" className={`${isAdmin ? "" : "ml-auto"} mr-2 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground md:ml-0`}>
           <UserRound className="size-5" />
           <span className="hidden sm:inline">Mon compte</span>
         </Link>

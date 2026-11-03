@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -16,6 +16,10 @@ import { formatFCFA } from "@/lib/products";
 
 const adminOptions = queryOptions({ queryKey: ["admin-access"], queryFn: () => checkAdmin() });
 export const Route = createFileRoute("/_authenticated/admin")({
+  beforeLoad: async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) throw redirect({ to: "/auth" });
+  },
   head: () => ({ meta: [
     { title: "Fiches produits — Administration Sunu KomKom" },
     { name: "description", content: "Gestion des photos, prix et stocks des produits Sunu KomKom." },

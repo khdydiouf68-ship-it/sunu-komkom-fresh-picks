@@ -15,7 +15,7 @@ const checkoutInput = z.object({
   address: z.string().trim().min(4).max(200),
   quartier: z.string().trim().max(80).optional(),
   note: z.string().trim().max(400).optional(),
-  paymentMethod: z.enum(["wave", "cash"]),
+  paymentMethod: z.enum(["paytech", "wave", "cash"]),
   origin: z.string().url().max(200),
 });
 
@@ -64,6 +64,19 @@ export const createCheckout = createServerFn({ method: "POST" })
       return { reference, launchUrl: null as string | null };
     }
 
+    if (data.paymentMethod === "paytech") {
+      try {
+        const launchUrl = await startPaytechPayment(
+          { id: order.id, reference, total, itemCount: items.length },
+          data.origin,
+        );
+        return { reference, launchUrl };
+      } catch (err) {
+        await supabaseAdmin.from("orders").update({ status: "failed" }).eq("id", order.id);
+        throw err;
+      }
+    }
+
     const apiKey = process.env["WAVE_API_KEY"];
     if (!apiKey) throw new Error("Le paiement Wave n'est pas encore configuré (clé API manquante).");
 
@@ -101,16 +114,82 @@ export const createCheckout = createServerFn({ method: "POST" })
     return { reference, launchUrl: session.wave_launch_url };
   });
 
-export const getOrderStatus = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => z.object({ reference: z.string().min(4).max(40) }).parse(input))
+/** Crée la demande de paiement PayTech pour une commande et mémorise son token. */
+async function startPaytechPayment(
+  order: { id: string; reference: string; total: number; itemCount: number },
+  origin: string,
+) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { requestPaytechPayment } = await import("./paytech.server");
+  const { token, redirectUrl } = await requestPaytechPayment({
+    reference: order.reference,
+    amount: order.total,
+    itemName: `Commande ${order.reference}`,
+    commandName: `Sunu KomKom — ${order.itemCount} article${order.itemCount > 1 ? "s" : ""}`,
+    origin,
+  });
+  await supabaseAdmin
+    .from("orders")
+    .update({ paytech_token: token, status: "pending" })
+    .eq("id", order.id);
+  return redirectUrl;
+}
+
+/** Relance le paiement en ligne d'une commande non payée (paiement annulé ou abandonné). */
+export const retryPayment = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) =>
+    z.object({ reference: z.string().min(4).max(40), origin: z.string().url().max(200) }).parse(input),
+  )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: order } = await supabaseAdmin
       .from("orders")
-      .select("reference, status, total, delivery_fee, payment_method, customer_name, items, created_at")
+      .select("id, reference, total, items, status, payment_method")
+      .eq("reference", data.reference)
+      .maybeSingle();
+    if (!order) throw new Error("Commande introuvable.");
+    if (order.status === "paid" || order.status === "confirmed") throw new Error("Cette commande est déjà réglée.");
+    if (order.payment_method !== "paytech") throw new Error("Cette commande ne se règle pas en ligne.");
+    const itemCount = Array.isArray(order.items) ? order.items.length : 1;
+    const launchUrl = await startPaytechPayment(
+      { id: order.id, reference: order.reference, total: order.total, itemCount },
+      data.origin,
+    );
+    return { launchUrl };
+  });
+
+export const getOrderStatus = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => z.object({ reference: z.string().min(4).max(40) }).parse(input))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row } = await supabaseAdmin
+      .from("orders")
+      .select(
+        "id, reference, status, total, delivery_fee, payment_method, paid_with, paid_at, paytech_token, customer_name, items, created_at",
+      )
       .eq("reference", data.reference)
       .maybeSingle();
 
-    if (!order) return null;
+    if (!row) return null;
+    const { id, paytech_token: token, ...order } = row;
+
+    // Secours si la notification IPN n'est pas arrivée (toujours le cas en local) :
+    // on demande directement à PayTech où en est le paiement.
+    if (order.payment_method === "paytech" && order.status === "pending" && token) {
+      try {
+        const { getPaytechStatus } = await import("./paytech.server");
+        const { result } = await getPaytechStatus(token);
+        if (result !== "pending") {
+          const update =
+            result === "paid"
+              ? { status: "paid", paid_at: new Date().toISOString() }
+              : { status: "failed" };
+          await supabaseAdmin.from("orders").update(update).eq("id", id).eq("status", "pending");
+          return { ...order, ...update };
+        }
+      } catch (err) {
+        console.error("PayTech get-status failed:", err);
+      }
+    }
     return order;
   });

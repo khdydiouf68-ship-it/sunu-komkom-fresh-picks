@@ -22,6 +22,8 @@ import { Route as PoissonsRouteImport } from './routes/poissons'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as CommandeReferenceRouteImport } from './routes/commande.$reference'
+import { Route as ProduitIdRouteImport } from './routes/produit.$id'
+import { Route as ApiPublicPaytechIpnRouteImport } from './routes/api/public/paytech-ipn'
 import { Route as ApiPublicWaveWebhookRouteImport } from './routes/api/public/wave-webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -88,6 +90,16 @@ const CommandeReferenceRoute = CommandeReferenceRouteImport.update({
   path: '/commande/$reference',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProduitIdRoute = ProduitIdRouteImport.update({
+  id: '/produit/$id',
+  path: '/produit/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPaytechIpnRoute = ApiPublicPaytechIpnRouteImport.update({
+  id: '/api/public/paytech-ipn',
+  path: '/api/public/paytech-ipn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWaveWebhookRoute = ApiPublicWaveWebhookRouteImport.update({
   id: '/api/public/wave-webhook',
   path: '/api/public/wave-webhook',
@@ -107,6 +119,8 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/commande/$reference': typeof CommandeReferenceRoute
+  '/produit/$id': typeof ProduitIdRoute
+  '/api/public/paytech-ipn': typeof ApiPublicPaytechIpnRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -122,6 +136,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/commande/$reference': typeof CommandeReferenceRoute
+  '/produit/$id': typeof ProduitIdRoute
+  '/api/public/paytech-ipn': typeof ApiPublicPaytechIpnRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
 export interface FileRoutesById {
@@ -139,6 +155,8 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/commande/$reference': typeof CommandeReferenceRoute
+  '/produit/$id': typeof ProduitIdRoute
+  '/api/public/paytech-ipn': typeof ApiPublicPaytechIpnRoute
   '/api/public/wave-webhook': typeof ApiPublicWaveWebhookRoute
 }
 export interface FileRouteTypes {
@@ -156,6 +174,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/compte'
     | '/commande/$reference'
+    | '/produit/$id'
+    | '/api/public/paytech-ipn'
     | '/api/public/wave-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -171,6 +191,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/compte'
     | '/commande/$reference'
+    | '/produit/$id'
+    | '/api/public/paytech-ipn'
     | '/api/public/wave-webhook'
   id:
     | '__root__'
@@ -187,6 +209,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/compte'
     | '/commande/$reference'
+    | '/produit/$id'
+    | '/api/public/paytech-ipn'
     | '/api/public/wave-webhook'
   fileRoutesById: FileRoutesById
 }
@@ -202,6 +226,8 @@ export interface RootRouteChildren {
   PanierRoute: typeof PanierRoute
   PoissonsRoute: typeof PoissonsRoute
   CommandeReferenceRoute: typeof CommandeReferenceRoute
+  ProduitIdRoute: typeof ProduitIdRoute
+  ApiPublicPaytechIpnRoute: typeof ApiPublicPaytechIpnRoute
   ApiPublicWaveWebhookRoute: typeof ApiPublicWaveWebhookRoute
 }
 
@@ -298,6 +324,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommandeReferenceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produit/$id': {
+      id: '/produit/$id'
+      path: '/produit/$id'
+      fullPath: '/produit/$id'
+      preLoaderRoute: typeof ProduitIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/paytech-ipn': {
+      id: '/api/public/paytech-ipn'
+      path: '/api/public/paytech-ipn'
+      fullPath: '/api/public/paytech-ipn'
+      preLoaderRoute: typeof ApiPublicPaytechIpnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/wave-webhook': {
       id: '/api/public/wave-webhook'
       path: '/api/public/wave-webhook'
@@ -333,6 +373,8 @@ const rootRouteChildren: RootRouteChildren = {
   PanierRoute: PanierRoute,
   PoissonsRoute: PoissonsRoute,
   CommandeReferenceRoute: CommandeReferenceRoute,
+  ProduitIdRoute: ProduitIdRoute,
+  ApiPublicPaytechIpnRoute: ApiPublicPaytechIpnRoute,
   ApiPublicWaveWebhookRoute: ApiPublicWaveWebhookRoute,
 }
 export const routeTree = rootRouteImport

@@ -1,13 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2 } from "lucide-react";
+import { Loader2, LogIn, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
+import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { formatFCFA } from "@/lib/products";
 import { createCheckout } from "@/lib/checkout.functions";
 import { LIVRAISON_FCFA } from "@/lib/checkout-shared";
+import { saveProfile } from "@/lib/account.functions";
+import { profileOptions } from "@/lib/account";
 
 export const Route = createFileRoute("/paiement")({
   head: () => ({
@@ -27,7 +31,11 @@ export const Route = createFileRoute("/paiement")({
 });
 
 const moyens = [
-  { id: "wave" as const, label: "Wave", detail: "Paiement mobile sécurisé, confirmation automatique" },
+  {
+    id: "paytech" as const,
+    label: "Paiement en ligne",
+    detail: "Wave, Orange Money, Free Money ou carte bancaire — sécurisé par PayTech",
+  },
   { id: "cash" as const, label: "À la livraison", detail: "Espèces à la réception" },
 ];
 
@@ -35,10 +43,48 @@ function PaiementPage() {
   const { items, total, lines, clear } = useCart();
   const navigate = useNavigate();
   const checkout = useServerFn(createCheckout);
-  const [moyen, setMoyen] = useState<"wave" | "cash">("wave");
+  const saveContact = useServerFn(saveProfile);
+  const queryClient = useQueryClient();
+  const [moyen, setMoyen] = useState<"paytech" | "cash">("paytech");
   const [envoi, setEnvoi] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
+  const connecte = email !== null;
 
-  if (items.length === 0) {
+  const [contact, setContact] = useState<Contact>(contactVide);
+  const [note, setNote] = useState("");
+  const [modifie, setModifie] = useState(false);
+  const [memoriser, setMemoriser] = useState(true);
+
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user.email ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setEmail(session?.user.email ?? null);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const { data: profil, isLoading: profilEnChargement } = useQuery({ ...profileOptions, enabled: connecte });
+
+  // Préremplit le formulaire avec les coordonnées du compte, tant que le client n'a rien saisi.
+  useEffect(() => {
+    if (profil && !modifie) setContact(profil);
+  }, [profil, modifie]);
+
+  const panierVide = items.length === 0;
+  const profilComplet = Boolean(profil?.fullName && profil.phone && profil.address);
+  const differentDuCompte =
+    !profil ||
+    contact.fullName.trim() !== profil.fullName ||
+    contact.phone.trim() !== profil.phone ||
+    contact.address.trim() !== profil.address ||
+    contact.quartier.trim() !== profil.quartier;
+
+  function changer(champ: keyof Contact, valeur: string) {
+    setModifie(true);
+    setContact((c) => ({ ...c, [champ]: valeur }));
+  }
+
+  if (panierVide) {
     return (
       <section className="mx-auto max-w-lg px-5 py-24 text-center">
         <h1 className="text-3xl">Paiement</h1>
@@ -56,20 +102,33 @@ function PaiementPage() {
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (envoi) return;
-    const form = new FormData(event.currentTarget);
+    const saisie: Contact = {
+      fullName: contact.fullName.trim(),
+      phone: contact.phone.trim(),
+      address: contact.address.trim(),
+      quartier: contact.quartier.trim(),
+    };
     setEnvoi(true);
     try {
       const result = await checkout({
         data: {
           lines,
-          customerName: String(form.get("nom") ?? ""),
-          customerPhone: String(form.get("tel") ?? ""),
-          address: String(form.get("adresse") ?? ""),
-          quartier: String(form.get("quartier") ?? "") || undefined,
+          customerName: saisie.fullName,
+          customerPhone: saisie.phone,
+          address: saisie.address,
+          quartier: saisie.quartier || undefined,
+          note: note.trim() || undefined,
           paymentMethod: moyen,
           origin: window.location.origin,
         },
       });
+      if (connecte && memoriser && differentDuCompte) {
+        try {
+          queryClient.setQueryData(profileOptions.queryKey, await saveContact({ data: saisie }));
+        } catch {
+          // La commande est déjà enregistrée : un échec ici ne doit pas la bloquer.
+        }
+      }
       clear();
       if (result.launchUrl) {
         window.location.href = result.launchUrl;
@@ -77,7 +136,7 @@ function PaiementPage() {
       }
       navigate({ to: "/commande/$reference", params: { reference: result.reference }, search: { echec: false } });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Le paiement a échoué, réessayez.");
+      toast.error(messageErreur(error));
       setEnvoi(false);
     }
   }
@@ -85,10 +144,114 @@ function PaiementPage() {
   return (
     <section className="mx-auto max-w-5xl px-5 py-14">
       <h1 className="text-4xl">Paiement</h1>
-      <p className="mt-2 text-muted-foreground">Choisissez votre moyen de paiement et confirmez la livraison.</p>
+      <p className="mt-2 text-muted-foreground">
+        Renseignez vos coordonnées de livraison et choisissez votre moyen de paiement.
+      </p>
 
       <form onSubmit={onSubmit} className="mt-10 grid gap-8 lg:grid-cols-[1fr_320px]">
         <div className="space-y-6">
+          <fieldset className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-card">
+            <legend className="px-2 text-sm font-semibold">Coordonnées de livraison</legend>
+
+            {connecte ? (
+              <div className="flex items-start gap-2.5 rounded-xl bg-secondary p-3 text-sm">
+                <UserRound className="mt-0.5 size-4 shrink-0 text-leaf" />
+                <p>
+                  Connecté en tant que <span className="font-medium">{email}</span>.{" "}
+                  {profilEnChargement
+                    ? "Chargement de vos coordonnées…"
+                    : profilComplet
+                      ? "Vos coordonnées ont été préremplies, vous pouvez les modifier."
+                      : "Complétez vos coordonnées, elles seront enregistrées pour vos prochaines commandes."}
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-secondary p-3 text-sm">
+                <span>Vous avez déjà un compte ? Connectez-vous pour préremplir vos coordonnées.</span>
+                <Link
+                  to="/auth"
+                  search={{ redirect: "/paiement" }}
+                  className="inline-flex items-center gap-1 font-medium text-primary underline-offset-2 hover:underline"
+                >
+                  <LogIn className="size-4" />
+                  Se connecter
+                </Link>
+              </div>
+            )}
+
+            <Champ
+              label="Nom complet"
+              id="nom"
+              autoComplete="name"
+              placeholder="Awa Diop"
+              minLength={2}
+              maxLength={80}
+              value={contact.fullName}
+              onChange={(v) => changer("fullName", v)}
+            />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Champ
+                label="Téléphone"
+                id="tel"
+                type="tel"
+                autoComplete="tel"
+                placeholder="77 000 00 00"
+                minLength={6}
+                maxLength={25}
+                value={contact.phone}
+                onChange={(v) => changer("phone", v)}
+              />
+              <Champ
+                label="Quartier (optionnel)"
+                id="quartier"
+                placeholder="Sacré-Cœur"
+                required={false}
+                maxLength={80}
+                value={contact.quartier}
+                onChange={(v) => changer("quartier", v)}
+              />
+            </div>
+            <Champ
+              label="Adresse de livraison"
+              id="adresse"
+              autoComplete="street-address"
+              placeholder="Sacré-Cœur 3, Villa 12, Dakar"
+              minLength={4}
+              maxLength={200}
+              value={contact.address}
+              onChange={(v) => changer("address", v)}
+            />
+            <div>
+              <label htmlFor="note" className="text-sm font-medium">
+                Instructions pour le livreur (optionnel)
+              </label>
+              <textarea
+                id="note"
+                name="note"
+                rows={2}
+                maxLength={400}
+                placeholder="Ex : sonner au portail bleu, appeler en arrivant…"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+
+            {connecte && differentDuCompte && (
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={memoriser}
+                  onChange={(e) => setMemoriser(e.target.checked)}
+                  className="size-4 accent-primary"
+                />
+                {profilComplet
+                  ? "Mettre à jour ces coordonnées dans mon compte"
+                  : "Enregistrer ces coordonnées dans mon compte"}
+              </label>
+            )}
+          </fieldset>
+
           <fieldset className="rounded-2xl border border-border bg-card p-6 shadow-card">
             <legend className="px-2 text-sm font-semibold">Moyen de paiement</legend>
             <div className="mt-2 grid gap-3 sm:grid-cols-2">
@@ -112,14 +275,6 @@ function PaiementPage() {
                 </label>
               ))}
             </div>
-          </fieldset>
-
-          <fieldset className="space-y-4 rounded-2xl border border-border bg-card p-6 shadow-card">
-            <legend className="px-2 text-sm font-semibold">Livraison</legend>
-            <Input label="Nom complet" id="nom" placeholder="Awa Diop" />
-            <Input label="Téléphone" id="tel" placeholder="77 000 00 00" />
-            <Input label="Adresse de livraison" id="adresse" placeholder="Sacré-Cœur 3, Villa 12, Dakar" />
-            <Input label="Quartier (optionnel)" id="quartier" placeholder="Sacré-Cœur" required={false} />
           </fieldset>
         </div>
 
@@ -149,11 +304,11 @@ function PaiementPage() {
             className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-medium text-accent-foreground disabled:opacity-60"
           >
             {envoi && <Loader2 className="size-4 animate-spin" />}
-            {moyen === "wave" ? "Payer avec Wave" : "Confirmer la commande"}
+            {moyen === "paytech" ? `Payer ${formatFCFA(total + LIVRAISON_FCFA)}` : "Confirmer la commande"}
           </button>
           <p className="mt-3 text-center text-xs text-muted-foreground">
-            {moyen === "wave"
-              ? "Vous serez redirigé vers Wave pour valider le paiement."
+            {moyen === "paytech"
+              ? "Vous serez redirigé vers la page sécurisée PayTech pour choisir Wave, Orange Money, Free Money ou carte."
               : "Vous réglez en espèces à la réception."}
           </p>
         </aside>
@@ -162,16 +317,38 @@ function PaiementPage() {
   );
 }
 
-function Input({
+type Contact = { fullName: string; phone: string; address: string; quartier: string };
+const contactVide: Contact = { fullName: "", phone: "", address: "", quartier: "" };
+
+/** Le serveur renvoie parfois une erreur de validation brute (JSON zod) : on la rend lisible. */
+function messageErreur(error: unknown) {
+  const message = error instanceof Error ? error.message : "";
+  if (!message || message.trim().startsWith("[")) return "Vérifiez vos coordonnées puis réessayez.";
+  return message;
+}
+
+function Champ({
   label,
   id,
+  value,
+  onChange,
   placeholder,
+  type = "text",
   required = true,
+  autoComplete,
+  minLength,
+  maxLength,
 }: {
   label: string;
   id: string;
+  value: string;
+  onChange: (value: string) => void;
   placeholder: string;
+  type?: string;
   required?: boolean;
+  autoComplete?: string;
+  minLength?: number;
+  maxLength?: number;
 }) {
   return (
     <div>
@@ -181,8 +358,14 @@ function Input({
       <input
         id={id}
         name={id}
+        type={type}
         required={required}
+        autoComplete={autoComplete}
+        minLength={minLength}
+        maxLength={maxLength}
         placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
       />
     </div>

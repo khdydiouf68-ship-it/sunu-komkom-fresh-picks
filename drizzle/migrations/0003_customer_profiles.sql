@@ -1,0 +1,12 @@
+CREATE TABLE public.customer_profiles (user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE, full_name text NOT NULL DEFAULT '' CHECK (char_length(full_name) <= 80), phone text NOT NULL DEFAULT '' CHECK (char_length(phone) <= 25), address text NOT NULL DEFAULT '' CHECK (char_length(address) <= 200), quartier text NOT NULL DEFAULT '' CHECK (char_length(quartier) <= 80), updated_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT, UPDATE ON public.customer_profiles TO authenticated;
+GRANT ALL ON public.customer_profiles TO service_role;
+ALTER TABLE public.customer_profiles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Customers read own profile" ON public.customer_profiles FOR SELECT TO authenticated USING (user_id = auth.uid());
+CREATE POLICY "Customers create own profile" ON public.customer_profiles FOR INSERT TO authenticated WITH CHECK (user_id = auth.uid());
+CREATE POLICY "Customers update own profile" ON public.customer_profiles FOR UPDATE TO authenticated USING (user_id = auth.uid()) WITH CHECK (user_id = auth.uid());
+CREATE TRIGGER customer_profiles_set_updated_at BEFORE UPDATE ON public.customer_profiles FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+CREATE OR REPLACE FUNCTION public.handle_new_customer() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$ BEGIN INSERT INTO public.customer_profiles (user_id, full_name, phone, address, quartier) VALUES (NEW.id, left(coalesce(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', ''), 80), left(coalesce(NEW.raw_user_meta_data->>'phone', ''), 25), left(coalesce(NEW.raw_user_meta_data->>'address', ''), 200), left(coalesce(NEW.raw_user_meta_data->>'quartier', ''), 80)) ON CONFLICT (user_id) DO NOTHING; RETURN NEW; END $$;
+REVOKE ALL ON FUNCTION public.handle_new_customer() FROM PUBLIC, anon, authenticated;
+CREATE TRIGGER on_auth_user_created_customer_profile AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_customer();
+INSERT INTO public.customer_profiles (user_id, full_name, phone, address, quartier) SELECT u.id, left(coalesce(u.raw_user_meta_data->>'full_name', u.raw_user_meta_data->>'name', ''), 80), left(coalesce(u.raw_user_meta_data->>'phone', ''), 25), left(coalesce(u.raw_user_meta_data->>'address', ''), 200), left(coalesce(u.raw_user_meta_data->>'quartier', ''), 80) FROM auth.users u ON CONFLICT (user_id) DO NOTHING;

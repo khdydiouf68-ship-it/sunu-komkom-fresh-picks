@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { formatFCFA, type Product } from "@/lib/products";
@@ -8,7 +9,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-      <div className="aspect-square overflow-hidden bg-sand">
+      <Link to="/produit/$id" params={{ id: product.id }} className="block aspect-square overflow-hidden bg-sand">
         <img
           src={product.image}
           alt={product.name}
@@ -17,10 +18,14 @@ export function ProductCard({ product }: { product: Product }) {
           loading="lazy"
           className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-      </div>
+      </Link>
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-lg font-semibold">{product.name}</h3>
+          <h3 className="text-lg font-semibold">
+            <Link to="/produit/$id" params={{ id: product.id }} className="hover:text-leaf">
+              {product.name}
+            </Link>
+          </h3>
           <span className="whitespace-nowrap font-semibold text-leaf">
             {formatFCFA(product.price)}
             <span className="text-xs font-normal text-muted-foreground">/{product.unit}</span>

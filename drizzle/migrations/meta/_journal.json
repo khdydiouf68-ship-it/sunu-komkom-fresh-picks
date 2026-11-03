@@ -22,6 +22,27 @@
       "when": 1793607719591,
       "tag": "0002_customer_orders",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793712896783,
+      "tag": "0003_customer_profiles",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793719673267,
+      "tag": "0004_user_roles_for_all",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793721654266,
+      "tag": "0005_paytech",
+      "breakpoints": true
     }
   ]
 }
