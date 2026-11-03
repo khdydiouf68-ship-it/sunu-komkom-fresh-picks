@@ -21,7 +21,9 @@ export function paytechConfig() {
  * l'adresse de notification IPN n'est jamais déduite d'une valeur envoyée par le navigateur.
  */
 export function siteUrls(requestOrigin: string) {
-  const site = process.env["SITE_URL"]?.replace(/\/+$/, "");
+  // Sur Vercel, VERCEL_PROJECT_PRODUCTION_URL (ex : sunu-komkom.vercel.app) est fourni automatiquement.
+  const vercel = process.env["VERCEL_PROJECT_PRODUCTION_URL"];
+  const site = (process.env["SITE_URL"] || (vercel ? `https://${vercel}` : undefined))?.replace(/\/+$/, "");
   const isLocal = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(requestOrigin);
   const base = site ?? (isLocal ? requestOrigin : null);
   if (!base) throw new Error("SITE_URL n'est pas configuré sur le serveur.");
