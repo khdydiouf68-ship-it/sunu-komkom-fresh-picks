@@ -12,9 +12,17 @@ export const productInput = z.object({
   description: z.string().trim().max(1000),
 });
 export type ManagedProduct = z.infer<typeof productInput>;
-export function mergeCatalog(rows: Product[]): Product[] {
+/**
+ * Fusionne les produits de départ (products.ts) avec ceux de la base.
+ * Une ligne marquée `hidden` (produit supprimé dans l'admin) retire le produit,
+ * même s'il fait partie des produits de départ.
+ */
+export function mergeCatalog(rows: Array<Product & { hidden?: boolean }>): Product[] {
   const merged = new Map(products.map(p => [p.id, p]));
-  for (const row of rows) merged.set(row.id, row);
+  for (const { hidden, ...row } of rows) {
+    if (hidden) merged.delete(row.id);
+    else merged.set(row.id, row);
+  }
   return [...merged.values()];
 }
 export function assertAdminRole(allowed: boolean | null) {
