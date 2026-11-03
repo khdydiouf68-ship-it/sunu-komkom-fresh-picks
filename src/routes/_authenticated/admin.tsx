@@ -2,17 +2,28 @@ import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-ro
 import { queryOptions, useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { Plus, Pencil, Save, LogOut, Upload, Package } from "lucide-react";
+import { Plus, Pencil, Save, LogOut, Upload, Package, Trash2, LayoutDashboard } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { checkAdmin, saveProduct } from "@/lib/catalog.functions";
+import { checkAdmin, deleteProduct, saveProduct } from "@/lib/catalog.functions";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { catalogOptions, useCatalog } from "@/lib/catalog";
 import { productInput, type ManagedProduct } from "@/lib/catalog-shared";
-import { formatFCFA } from "@/lib/products";
+import { formatFCFA, type Product } from "@/lib/products";
 
 const adminOptions = queryOptions({ queryKey: ["admin-access"], queryFn: () => checkAdmin() });
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -21,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
     if (error || !data.user) throw redirect({ to: "/auth" });
   },
   head: () => ({ meta: [
-    { title: "Fiches produits — Administration Sunu KomKom" },
+    { title: "Administration — Sunu KomKom" },
     { name: "description", content: "Gestion des photos, prix et stocks des produits Sunu KomKom." },
     { property: "og:title", content: "Fiches produits — Sunu KomKom" },
     { property: "og:description", content: "Espace administrateur de la boutique." },
@@ -38,6 +49,25 @@ function AdminPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const save = useServerFn(saveProduct);
+  const remove = useServerFn(deleteProduct);
+  const [onglet, setOnglet] = useState<"stats" | "produits">("stats");
+  const [aSupprimer, setASupprimer] = useState<Product | null>(null);
+  const [suppression, setSuppression] = useState(false);
+  async function confirmerSuppression() {
+    if (!aSupprimer) return;
+    setSuppression(true);
+    try {
+      await remove({ data: { id: aSupprimer.id } });
+      await queryClient.invalidateQueries({ queryKey: ["catalog"] });
+      if (draft?.id === aSupprimer.id) setDraft(null);
+      toast.success(`${aSupprimer.name} a été supprimé de la boutique`);
+      setASupprimer(null);
+    } catch (failure) {
+      toast.error(failure instanceof Error ? failure.message : "Suppression impossible.");
+    } finally {
+      setSuppression(false);
+    }
+  }
   const [draft, setDraft] = useState<ManagedProduct | null>(null);
   const [preview, setPreview] = useState("");
   const [search, setSearch] = useState("");
@@ -53,13 +83,22 @@ function AdminPage() {
   if (!allowed) return <section className="mx-auto max-w-xl px-5 py-14"><h1 className="text-3xl">Accès administrateur en attente</h1><p className="my-5 text-muted-foreground">Votre compte est connecté, mais n’a pas encore l’autorisation de gérer les produits.</p><Button variant="outline" onClick={logout}><LogOut />Se déconnecter</Button></section>;
   return <section className="mx-auto max-w-6xl px-5 py-10">
     <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-6">
-      <div><p className="mb-1 text-sm font-medium text-leaf">Sunu KomKom · Administration</p><h1 className="text-3xl">Fiches produits</h1></div>
+      <div><p className="mb-1 text-sm font-medium text-leaf">Sunu KomKom · Administration</p><h1 className="text-3xl">{onglet === "stats" ? "Tableau de bord" : "Fiches produits"}</h1></div>
       <div className="flex flex-wrap gap-2"><Button asChild variant="outline"><Link to="/">Voir la boutique</Link></Button><Button variant="ghost" onClick={logout}><LogOut />Déconnexion</Button></div>
     </div>
+    <nav aria-label="Sections de l'administration" className="mt-6 flex gap-1 border-b border-border">
+      {([["stats", "Tableau de bord", LayoutDashboard], ["produits", "Produits", Package]] as const).map(([id, label, Icon]) => (
+        <button key={id} type="button" aria-current={onglet === id ? "page" : undefined} onClick={() => setOnglet(id)}
+          className={`-mb-px inline-flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors ${onglet === id ? "border-leaf text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
+          <Icon className="size-4" />{label}
+        </button>
+      ))}
+    </nav>
+    {onglet === "stats" ? <div className="mt-6"><AdminDashboard catalog={catalog} /></div> : <>
     <div className="my-6 flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-2 text-muted-foreground"><Package className="size-5" />{catalog.length} produits</div><Button onClick={() => { setDraft({ id: crypto.randomUUID(), name: "", category: "legume", price: 0, stock: 0, unit: "kg", image: "", description: "" }); setPreview(""); setError(""); }}><Plus />Ajouter un produit</Button></div>
     <div className={`grid gap-8 ${draft ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,400px)]" : ""}`}>
       <div><Input aria-label="Rechercher un produit" placeholder="Rechercher un produit…" value={search} onChange={e => setSearch(e.target.value)} className="mb-4 max-w-md" />
-      <ul className="divide-y divide-border">{catalog.filter(p => p.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())).map(p => <li key={p.id} className="flex items-center gap-4 py-4"><img src={p.image} alt={p.name} className="size-16 shrink-0 rounded-md object-cover" /><div className="min-w-0 flex-1"><p className="font-semibold">{p.name}</p><p className="text-sm text-muted-foreground">{formatFCFA(p.price)} / {p.unit} · Stock : {p.stock}</p></div><Button variant="outline" size="icon" title={`Modifier ${p.name}`} aria-label={`Modifier ${p.name}`} onClick={() => { const original = savedRows.find(r => r.id === p.id); setDraft({ ...p, image: original?.image ?? p.image }); setPreview(p.image); setError(""); }}><Pencil /></Button></li>)}</ul>
+      <ul className="divide-y divide-border">{catalog.filter(p => p.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())).map(p => <li key={p.id} className="flex items-center gap-4 py-4"><img src={p.image} alt={p.name} className="size-16 shrink-0 rounded-md object-cover" /><div className="min-w-0 flex-1"><p className="font-semibold">{p.name}</p><p className="text-sm text-muted-foreground">{formatFCFA(p.price)} / {p.unit} · Stock : {p.stock}</p></div><Button variant="outline" size="icon" title={`Modifier ${p.name}`} aria-label={`Modifier ${p.name}`} onClick={() => { const original = savedRows.find(r => r.id === p.id); setDraft({ ...p, image: original?.image ?? p.image }); setPreview(p.image); setError(""); }}><Pencil /></Button><Button variant="outline" size="icon" title={`Supprimer ${p.name}`} aria-label={`Supprimer ${p.name}`} className="text-destructive hover:text-destructive" onClick={() => setASupprimer(p)}><Trash2 /></Button></li>)}</ul>
       </div>
       {draft && <form className="space-y-4 border-t border-border pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0" onSubmit={async e => {
         e.preventDefault(); setError("");
@@ -94,5 +133,18 @@ function AdminPage() {
         <div className="flex gap-2"><Button type="submit" disabled={busy}><Save />{busy ? "Enregistrement…" : "Enregistrer"}</Button><Button type="button" variant="outline" disabled={busy} onClick={() => setDraft(null)}>Annuler</Button></div>
       </form>}
     </div>
+    </>}
+    <AlertDialog open={aSupprimer !== null} onOpenChange={open => { if (!open && !suppression) setASupprimer(null); }}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Supprimer « {aSupprimer?.name} » ?</AlertDialogTitle>
+          <AlertDialogDescription>Le produit ne sera plus visible dans la boutique et ne pourra plus être commandé. Les commandes passées qui le contiennent restent intactes.</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={suppression}>Annuler</AlertDialogCancel>
+          <AlertDialogAction disabled={suppression} className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={e => { e.preventDefault(); void confirmerSuppression(); }}>{suppression ? "Suppression…" : "Supprimer"}</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </section>;
 }
