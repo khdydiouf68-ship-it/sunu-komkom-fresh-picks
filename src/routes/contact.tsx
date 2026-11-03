@@ -33,7 +33,10 @@ function ContactPage() {
             <MapPin className="size-5 text-leaf" /> Marché Kermel, Dakar — Sénégal
           </li>
           <li className="flex items-center gap-3">
-            <Phone className="size-5 text-leaf" /> +221 77 000 00 00
+            <Phone className="size-5 text-leaf" />{" "}
+            <a href="tel:+221789312347" className="hover:text-foreground">
+              +221 78 931 23 47
+            </a>
           </li>
           <li className="flex items-center gap-3">
             <Mail className="size-5 text-leaf" /> contact@sunukomkom.sn

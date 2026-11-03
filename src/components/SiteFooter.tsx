@@ -37,7 +37,11 @@ export function SiteFooter() {
           <p className="font-semibold text-foreground">Contact</p>
           <ul className="mt-3 space-y-2 text-muted-foreground">
             <li>Marché Kermel, Dakar — Sénégal</li>
-            <li>+221 77 000 00 00</li>
+            <li>
+              <a href="tel:+221789312347" className="hover:text-foreground">
+                +221 78 931 23 47
+              </a>
+            </li>
             <li>contact@sunukomkom.sn</li>
           </ul>
         </div>
