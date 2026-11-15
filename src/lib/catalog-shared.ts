@@ -8,7 +8,12 @@ export const productInput = z.object({
   price: z.number().int().min(0).max(10000000),
   unit: z.string().trim().min(1).max(30),
   stock: z.number().int().min(0).max(1000000),
-  image: z.string().min(1).max(2000).refine(v => v.startsWith("storage:") || v.startsWith("/assets/") || /^https:\/\//.test(v), "Photo invalide"),
+  // Les photos de départ sont servies par le bundle : `/assets/...` une fois le site
+  // publié, `/src/assets/...` pendant les tests. Les deux sont valides.
+  image: z.string().min(1).max(2000).refine(
+    v => v.startsWith("storage:") || v.startsWith("/assets/") || v.startsWith("/src/assets/") || v.startsWith("/uploads/") || /^https:\/\//.test(v),
+    "Photo invalide",
+  ),
   description: z.string().trim().max(1000),
 });
 export type ManagedProduct = z.infer<typeof productInput>;
