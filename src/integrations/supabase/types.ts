@@ -14,33 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      customer_profiles: {
-        Row: {
-          address: string
-          full_name: string
-          phone: string
-          quartier: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          address?: string
-          full_name?: string
-          phone?: string
-          quartier?: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          address?: string
-          full_name?: string
-          phone?: string
-          quartier?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       orders: {
         Row: {
           address: string
@@ -52,9 +25,7 @@ export type Database = {
           items: Json
           note: string | null
           paid_at: string | null
-          paid_with: string | null
           payment_method: string
-          paytech_token: string | null
           quartier: string | null
           reference: string
           status: string
@@ -75,9 +46,7 @@ export type Database = {
           items?: Json
           note?: string | null
           paid_at?: string | null
-          paid_with?: string | null
           payment_method?: string
-          paytech_token?: string | null
           quartier?: string | null
           reference: string
           status?: string
@@ -98,9 +67,7 @@ export type Database = {
           items?: Json
           note?: string | null
           paid_at?: string | null
-          paid_with?: string | null
           payment_method?: string
-          paytech_token?: string | null
           quartier?: string | null
           reference?: string
           status?: string
@@ -154,19 +121,16 @@ export type Database = {
       }
       user_roles: {
         Row: {
-          email: string | null
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
-          email?: string | null
           id?: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
-          email?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
